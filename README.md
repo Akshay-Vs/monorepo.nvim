@@ -102,5 +102,3 @@ This plugin is under active development. Feel free to open issues or submit pull
 ## License
 
 MIT License
-
-```
