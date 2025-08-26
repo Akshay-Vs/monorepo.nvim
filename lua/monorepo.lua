@@ -2,6 +2,8 @@ local config = require("monorepo.config")
 local telescope = require("monorepo.telescope")
 local scanner = require("monorepo.scanner")
 
+require("monorepo.venv_manager").setup_autocommands()
+
 local M = {}
 
 -- Setup function

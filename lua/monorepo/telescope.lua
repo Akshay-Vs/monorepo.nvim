@@ -1,5 +1,6 @@
 local utils = require("monorepo.utils")
 local scanner = require("monorepo.scanner")
+local venv_manager = require("monorepo.venv_manager")
 
 local M = {}
 
@@ -7,6 +8,9 @@ local M = {}
 local function open_project(project)
   -- Change to project directory
   vim.cmd("cd " .. vim.fn.fnameescape(project.path))
+
+  -- Handle Python venv activation
+  venv_manager.handle_python_project(project)
 
   -- Open neotree
   vim.cmd("Neotree show")

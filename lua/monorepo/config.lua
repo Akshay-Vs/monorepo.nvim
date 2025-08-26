@@ -4,6 +4,7 @@ local M = {}
 M.defaults = {
   root_dir = vim.fn.getcwd(), -- Default to current working directory
   exclude_dirs = { "node_modules", ".git", "dist", "build", "__pycache__", ".next", "coverage" },
+  match_venv = { ".venv", ".venv", ".virtualenv" },
   max_depth = 5,
   project_types = {
     nodejs = {
