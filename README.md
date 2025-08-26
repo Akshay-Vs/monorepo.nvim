@@ -4,12 +4,13 @@ monorepo.nvim is a Neovim plugin for navigating and managing multiple projects w
 
 ## Features
 
-- Scans the file system to detect projects using configuration files like `package.json` and `pyproject.toml`
-- Displays discovered projects in a Telescope picker
-- Opens selected projects in Neo-tree
-- Allows switching to the directory of a selected project
-- Configurable search depth and directory exclusions
-- Supports adding custom project types and match patterns
+- **Project Discovery**: Scans the file system to detect projects using configuration files like package.json and pyproject.toml
+- **Telescope Integration:** Displays discovered projects in a Telescope picker with project type emojis and metadata
+- **Project Navigation**: Opens selected projects in Neo-tree or switches to the project directory
+- **Virtual Environment Management**: Automatically detects and activates Python virtual environments (.venv, venv, virtualenv) when switching to Python projects, with automatic LSP restart
+- **Configurable Scanning**: Customizable search depth and directory exclusions to optimize performance
+- **Extensible Project Types**: Supports adding custom project types with their own configuration files and name extraction patterns
+- **Cross-Platform Support**: Works on both Unix-like systems and Windows environments
 
 ## Requirements
 
@@ -33,10 +34,9 @@ Example using `lazy.nvim` (mandatory):
   end
 }
 ````
-
 ## Configuration
 
-The plugin supports basic configuration through the `setup` function (optional):
+The plugin supports comprehensive configuration through the `setup` function (optional):
 
 ```lua
 require('monorepo').setup({
@@ -51,25 +51,74 @@ require('monorepo').setup({
     "coverage"
   },
   max_depth = 5,
+  match_venv = { ".venv", ".venv", ".virtualenv" },
   project_types = {
     nodejs = {
-      emoji = "",
+      emoji = "📦",
       config_file = "package.json",
       name_pattern = '"name"%s*:%s*"([^"]+)"'
     },
     python = {
-      emoji = "",
+      emoji = "🐍",
       config_file = "pyproject.toml",
       name_pattern = 'name%s*=%s*"([^"]+)"'
+    },
+    rust = {
+      emoji = "🦀",
+      config_file = "Cargo.toml",
+      name_pattern = 'name%s*=%s*"([^"]+)"'
+    },
+    go = {
+      emoji = "🐹",
+      config_file = "go.mod",
+      name_pattern = 'module%s+([^%s\n]+)'
     }
   }
 })
 ```
 
-* `root_dir`: the directory to start searching from
-* `exclude_dirs`: directories to ignore while scanning
-* `max_depth`: how many directory levels deep to search
-* `project_types`: defines how to recognize different types of projects
+### Configuration Options
+
+* **`root_dir`**: The directory to start searching from (defaults to current working directory)
+* **`exclude_dirs`**: Array of directory names to ignore while scanning for better performance
+* **`max_depth`**: Maximum directory levels deep to search (prevents infinite recursion)
+* **`match_venv`**: Array of virtual environment folder names to look for in Python projects
+* **`project_types`**: Defines how to recognize and display different types of projects
+
+### Project Type Configuration
+
+Each project type supports:
+* **`emoji`**: Display icon for the project type in Telescope picker
+* **`config_file`**: File that identifies this project type (e.g., `package.json`)
+* **`name_pattern`**: Lua pattern to extract the project name from the config file
+
+### Virtual Environment Support
+
+For Python projects, the plugin will automatically:
+1. Search for directories matching names in `match_venv`
+2. Validate they contain a proper Python virtual environment
+3. Activate the environment and restart LSP when switching to the project
+4. Support both Unix-like (`bin/python`) and Windows (`Scripts/python.exe`) environments
+
+### Adding Custom Project Types
+
+You can easily add support for new project types:
+
+```lua
+project_types = {
+  -- ... existing types
+  flutter = {
+    emoji = "💙",
+    config_file = "pubspec.yaml",
+    name_pattern = 'name:%s*([^%s\n]+)'
+  },
+  docker = {
+    emoji = "🐳",
+    config_file = "docker-compose.yml",
+    name_pattern = 'version:%s*["\']([^"\']+)["\']'
+  }
+}
+```
 
 ## Usage
 
